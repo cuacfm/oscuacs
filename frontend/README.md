@@ -1,2 +1,2 @@
 # oscuacs
-Web App to manage the CUAC FM Annual Awards
+Frontend to manage the CUAC FM Annual Awards
