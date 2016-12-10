@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      
+      
+               
+         <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+         <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+         <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+         <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+         <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+         <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+         <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+         <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+         <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+         <link rel="icon" type="image/png" sizes="192x192"  href="favicon/android-icon-192x192.png">
+         <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+         <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+         <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+         <link rel="manifest" href="favicon/manifest.json">
+         <meta name="msapplication-TileColor" content="#ffffff">
+         <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+         <meta name="theme-color" content="#ffffff">
+         
+         
+      <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+      <title>Oscuacs 2016</title>
+      <!-- Bootstrap -->
+      <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+      <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+      <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+      <script type="text/javascript" src="bootstrap/js/jquery-1.9.1.js"></script>
+      <script>
+	  	var categories;
+		
+		function generateVotes(){
+			   
+			var classes= [".dropdown-select-sinto",".dropdown-select-prod",".dropdown-select-prom",".dropdown-select-incom",".dropdown-select-tecnov",".dropdown-select-tec",".dropdown-select-loconov",".dropdown-select-locanov",".dropdown-select-loco",".dropdown-select-loca",".dropdown-select-divulga",".dropdown-select-social",".dropdown-select-musical",".dropdown-select-programnovel",".dropdown-select-program"];		
+			var myObt;
+			for (i = 0; i < categories.length; i++) { 
+			
+			
+				var idObt = categories[i].id;
+				var oneObt = $('body').find(''+classes[i]+'1p').find('.dropdown-toggle').attr("data-selected");
+				var twoObt = $('body').find(''+classes[i]+'2p').find('.dropdown-toggle').attr("data-selected");
+				var threeObt = $('body').find(''+classes[i]+'3p').find('.dropdown-toggle').attr("data-selected");
+				
+				//ABORT VOTATION IF THERES ONE ELEMENT BLANK
+				
+				if(oneObt==1 || twoObt==2|| threeObt ==3){
+					jsonArr=-1;
+					return -1;
+				}
+				
+				if(i==0){
+					 myObt = '"'+idObt+'":{"one":"'+oneObt+'","two":"'+twoObt+'","three":"'+threeObt+'"}';
+				}
+				else{
+					 myObt = myObt + ',' + '"'+idObt+'":{"one":"'+oneObt+'","two":"'+twoObt+'","three":"'+threeObt+'"}';
+				}
+			}
+			myObt= '{'+myObt+'}';
+			
+			console.log(myObt);
+			
+			return JSON.parse(myObt);
+				
+		}
+	  
+	  
+	  	
+	  	function sendResult(){
+			
+			var jsonUserVoted = generateVotes();
+			
+			if(jsonUserVoted==-1){
+				
+				alert("No puedes dejar campos sin votar revisa tus votaciones ;)");
+				return;
+			}
+			  
+			var userKey =  getUrlVars()["code"];
+			//send votes
+			var request = new XMLHttpRequest();
+
+				request.open('POST', "http://193.147.40.30:8080/api/voter/"+userKey+"/vote ");
+				console.log("url::>>"+"http://193.147.40.30:8080/api/voter/"+userKey+"/vote");
+				request.setRequestHeader('Content-Type','application/json; charset=utf-8');
+				
+				request.onreadystatechange = function () {
+				  if (this.readyState === 4){
+				  	  if(this.status == 200) {
+						 console.log("entrando aqui");
+						 window.location.replace("gracias.html?code="+userKey);
+					  }
+					  else{
+						  alert('No se pudo procesar la votación. Revisa que esté todo correcto');
+					  }
+				  }
+				};
+				
+				var bodyReq = JSON.stringify(jsonUserVoted);
+				request.send(bodyReq);
+			
+		}
+		
+	  
+	  
+		 function getUrlVars() {
+			var vars = {};
+			var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+			vars[key] = value;
+			});
+			return vars;
+		 }
+			  
+         $(window).load(function(){ 
+		 
+		 
+		 //set data on spinners
+		 
+						var userKeyInner =  getUrlVars()["code"];
+						var requestInner = new XMLHttpRequest();
+		
+						requestInner.open('POST', 'http://193.147.40.30:8080/api/voter/'+userKeyInner+'/contest');
+						console.log("url::>>"+'http://193.147.40.30:8080/api/voter/'+userKeyInner+'/contest');
+						requestInner.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+						
+						requestInner.onreadystatechange = function () {
+						  if (this.readyState === 4){
+							if(this.status == 200) {
+								try{
+									var json = JSON.parse(this.responseText);
+									categories = json.categories;
+									var candidates;
+									//set all candidatres and sublists insert on listCandidates + index+points
+									for (i = 0; i < categories.length; i++) { 
+										candidates = categories[i].candidates;
+										for(j=0;j<candidates.length; j++){
+											//3 points
+											$('body').find('.listCandidates'+i+'3').append('<li role="presentation"><a href="#'+'.listCandidates'+i+'3'+'" role="menuitem">'+candidates[j]+'</a></li>');
+											
+											//2points
+											$('body').find('.listCandidates'+i+'2').append('<li role="presentation"><a href="#'+'.listCandidates'+i+'2'+'" role="menuitem">'+candidates[j]+'</a></li>');
+											
+											//1point
+											$('body').find('.listCandidates'+i+'1').append('<li role="presentation"><a href="#'+'.listCandidates'+i+'1'+'" role="menuitem">'+candidates[j]+'</a></li>');
+										}						
+									}
+								}
+								catch(err){
+									console.log(err);
+								}
+							  }
+							  else{
+								  alert("Hubo problemas hay que reiniciar la votación"); 
+							  }
+							}
+						};
+						requestInner.send();
+		 
+		 
+		 //produccion
+		 $('.dropdown-select-prod3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-prod2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-prod3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-prod3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-prod3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-prod2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-prod1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-prod3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-prod2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-prod2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-prod1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-prod3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-prod2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-prod1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-prod1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		 
+		 //promocion
+		 $('.dropdown-select-prom3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-prom2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-prom3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-prom3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-prom3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-prom2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-prom1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-prom3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-prom2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-prom2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-prom1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-prom3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-prom2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-prom1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-prom1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+			
+			//iniciativa comunitaria
+		 $('.dropdown-select-incom3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-incom2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-incom3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-incom3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-incom3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-incom2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-incom1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-incom3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-incom2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-incom2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-incom1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-incom3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-incom2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-incom1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-incom1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		 
+		 //sintonia
+		 $('.dropdown-select-sinto3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-sinto2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-sinto3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-sinto3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-sinto3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-sinto2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-sinto1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-sinto3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-sinto2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-sinto2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-sinto1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-sinto3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-sinto2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-sinto1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-sinto1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		 
+		 //tecnico novel
+		 $('.dropdown-select-tecnov3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-tecnov2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-tecnov3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-tecnov3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-tecnov3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-tecnov2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-tecnov1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-tecnov3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-tecnov2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-tecnov2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-tecnov1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-tecnov3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-tecnov2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-tecnov1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-tecnov1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+			
+		 //tecnico sonido
+		 $('.dropdown-select-tec3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-tec2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-tec3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-tec3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-tec3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-tec2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-tec1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-tec3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-tec2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-tec2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-tec1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-tec3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-tec2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-tec1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-tec1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		 
+		 //locutor novel
+		 $('.dropdown-select-loconov3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-loconov2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loconov3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loconov3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loconov3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-loconov2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-loconov1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loconov3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loconov2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loconov2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-loconov1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-loconov3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loconov2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loconov1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loconov1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		 
+		 
+		 //locutora novel 
+		 $('.dropdown-select-locanov3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-locanov2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-locanov3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-locanov3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-locanov3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-locanov2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-locanov1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-locanov3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-locanov2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-locanov2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-locanov1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-locanov3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-locanov2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-locanov1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-locanov1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		 
+		 
+		 //locutor
+		  $('.dropdown-select-loco3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-loco2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loco3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loco3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loco3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-loco2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-loco1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loco3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loco2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loco2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-loco1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-loco3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loco2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loco1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loco1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		 
+		 //locutora
+		 $('.dropdown-select-loca3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-loca2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loca3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loca3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loca3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-loca2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-loca1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loca3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loca2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loca2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-loca1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-loca3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-loca2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-loca1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-loca1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		 
+		 
+		 //divulgativo
+		 $('.dropdown-select-divulga3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-divulga2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-divulga3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-divulga3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-divulga3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-divulga2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-divulga1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-divulga3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-divulga2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-divulga2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-divulga1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-divulga3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-divulga2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-divulga1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-divulga1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		
+		 //social politico
+		 $('.dropdown-select-social3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-social2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-social3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-social3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-social3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-social2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-social1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-social3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-social2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-social2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-social1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-social3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-social2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-social1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-social1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		  
+		 //programa musical
+		 $('.dropdown-select-musical3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-musical2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-musical3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-musical3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-musical3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-musical2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-musical1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-musical3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-musical2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-musical2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-musical1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-musical3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-musical2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-musical1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-musical1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+		
+		 //programa novel
+		 $('.dropdown-select-programnovel3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-programnovel2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-programnovel3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-programnovel3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-programnovel3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-programnovel2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-programnovel1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-programnovel3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-programnovel2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-programnovel2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-programnovel1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-programnovel3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-programnovel2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-programnovel1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-programnovel1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+			 
+			//programa
+         	 $('.dropdown-select-program3p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if($('body').find('.dropdown-select-program2p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-program3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-program3p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-program3p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         	
+         	$('.dropdown-select-program2p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-program1p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-program3p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-program2p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-program2p').find('.dropdown-toggle').attr("data-selected",target);
+         	   
+         	   }
+         	});
+         	
+         	$('.dropdown-select-program1p').on( 'click', '.dropdown-menu li a', function() { 
+         	   var target = $(this).html();
+         	   if( $('body').find('.dropdown-select-program3p').find('.dropdown-toggle').attr("data-selected")==target || 
+         	    $('body').find('.dropdown-select-program2p').find('.dropdown-toggle').attr("data-selected")==target){
+         			alert('No se puede votar dos veces lo mismo ;)');
+         		}
+         		else{
+         	   //Adds active class to selected item
+         	   $(this).parents('.dropdown-menu').find('li').removeClass('active');
+         	   $(this).parent('li').addClass('active');
+         
+         	   //Displays selected text on dropdown-toggle button
+         	   $(this).parents('.dropdown-select-program1p').find('.dropdown-toggle').html(target + ' <span class="caret"></span>');
+         	   $(this).parents('.dropdown-select-program1p').find('.dropdown-toggle').attr("data-selected",target);
+         	   }
+         	});
+         });
+      </script>
+   </head>
+   <body>
+      <nav class="navbar navbar-default">
+         <div class="container-fluid">
+            <div class="navbar-header">
+               <a class="navbar-brand" href="#">
+               <img alt="Oscuacs 2016" src="images/Oscuacs2016.png" style="width:25px;">
+               </a>
+               <p class="navbar-text navbar-right">Votación OSCUACS 2016</p>
+            </div>
+         </div>
+      </nav>
+      <div class="row">
+      <div style="margin:30px;">
+      <h1>¡¡Vota ahora!!</h1>
+	  <br>
+	  
+	  
+	  
+	  <!-- mejor sintonia -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Sintonia</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-sinto3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuincom" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates03" role="menu" aria-labelledby="dropdownMenuincom">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-sinto2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuincom2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates02" role="menu" aria-labelledby="dropdownMenuincom2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-sinto1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuincom1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates01" role="menu" aria-labelledby="dropdownMenuincom1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  
+	  <!-- mejor promocion -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Producción</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-prod3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuprod" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates13" role="menu" aria-labelledby="dropdownMenuprod">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-prod2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuprod2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates12" role="menu" aria-labelledby="dropdownMenuprod2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-prod1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuprod1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates11" role="menu" aria-labelledby="dropdownMenuprod1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  <!-- mejor produccion -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Promoción</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-prom3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuprom" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates23" role="menu" aria-labelledby="dropdownMenuprom">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-prom2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuprom2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates22" role="menu" aria-labelledby="dropdownMenuprom2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-prom1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuprom1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates21" role="menu" aria-labelledby="dropdownMenuprom1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  
+	  <!-- mejor iniciativa comunitaria -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Iniciativa Comunitaria</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-incom3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuincom" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates33" role="menu" aria-labelledby="dropdownMenuincom">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-incom2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuincom2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates32" role="menu" aria-labelledby="dropdownMenuincom2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-incom1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuincom1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates31" role="menu" aria-labelledby="dropdownMenuincom1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  <!-- mejor tecnico novel -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Técnico Novel</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-tecnov3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenutecnov" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates43" role="menu" aria-labelledby="dropdownMenutecnov">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-tecnov2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenutecnov2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates42" role="menu" aria-labelledby="dropdownMenutecnov2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-tecnov1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenutecnov1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates41" role="menu" aria-labelledby="dropdownMenutecnov1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  <!-- mejor tecnico -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Técnico</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-tec3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenutec" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates53" role="menu" aria-labelledby="dropdownMenutec">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-tec2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenutec2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates52" role="menu" aria-labelledby="dropdownMenutec2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-tec1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenutec1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates51" role="menu" aria-labelledby="dropdownMenutec1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  <!-- mejor locutor novel -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Locutor Novel</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-loconov3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloconov" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates63" role="menu" aria-labelledby="dropdownMenuloconov">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-loconov2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloconov2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates62" role="menu" aria-labelledby="dropdownMenuloconov2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-loconov1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloconov1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates61" role="menu" aria-labelledby="dropdownMenuloconov1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  <!-- mejor locutora novel -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Locutora Novel</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-locanov3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenulocanov" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates73" role="menu" aria-labelledby="dropdownMenulocanov">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-locanov2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenulocanov2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates72" role="menu" aria-labelledby="dropdownMenulocanov2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-locanov1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenulocaNovel1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates71" role="menu" aria-labelledby="dropdownMenulocaNovel1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  <!-- mejor locutor -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Locutor</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-loco3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloco" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates83" role="menu" aria-labelledby="dropdownMenuloco">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-loco2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloco2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates82" role="menu" aria-labelledby="dropdownMenuloco2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-loco1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloco1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates81" role="menu" aria-labelledby="dropdownMenuloco1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  <!-- mejor locutora -->
+	   <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor Locutora</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-loca3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloca" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates93" role="menu" aria-labelledby="dropdownMenuloca">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-loca2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloca2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates92" role="menu" aria-labelledby="dropdownMenuloca2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-loca1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuloca1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates91" role="menu" aria-labelledby="dropdownMenuloca1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  <!-- mejor programa divulgativo -->
+	   <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor programa Divulgativo</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-divulga3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenudivulga" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates103" role="menu" aria-labelledby="dropdownMenudivulga">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-divulga2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenudivulga2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates102" role="menu" aria-labelledby="dropdownMenudivulga2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-divulga1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenudivulga1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates101" role="menu" aria-labelledby="dropdownMenudivulga1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  <!-- mejor social politico -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor programa Social/Político</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-social3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuSocial" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates113" role="menu" aria-labelledby="dropdownMenuSocial">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-social2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuSocial2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates112" role="menu" aria-labelledby="dropdownMenuSocial2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-social1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuSocial1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates111" role="menu" aria-labelledby="dropdownMenuSocial1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  
+	  <!-- mejor musical -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor programa Musical</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-musical3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuMusical" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates123" role="menu" aria-labelledby="dropdownMenuMusical">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-musical2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuMusical2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates122" role="menu" aria-labelledby="dropdownMenuMusical2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-musical1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuMusical1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates121" role="menu" aria-labelledby="dropdownMenuMusical1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  
+	  <!-- mejor programa novel -->
+	  <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor programa Novel</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-programnovel3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuPrograma" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates133" role="menu" aria-labelledby="dropdownMenuPrograma">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-programnovel2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuPrograma2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates132" role="menu" aria-labelledby="dropdownMenuPrograma2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-programnovel1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuProgramaNovel1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates131" role="menu" aria-labelledby="dropdownMenuProgramaNovel1">
+               </ul>
+            </div>
+         </div>
+      </div>
+	  
+	  
+	  
+      <!--mejor programa-->
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Mejor programa</h3>
+         </div>
+         <div class="panel-body">
+            <div class="dropdown dropdown-select-program3p">
+               <p class="label label-success">3 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuPrograma" data-selected="3" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 3 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates143" role="menu" aria-labelledby="dropdownMenuPrograma">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-program2p">
+               <p class="label label-warning">2 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuPrograma2" data-selected="2" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 2 puntos
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates142" role="menu" aria-labelledby="dropdownMenuPrograma2">
+               </ul>
+            </div>
+            <br>
+            <div class="dropdown dropdown-select-program1p">
+               <p class="label label-danger">1 puntos:</p>
+               <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuPrograma1" data-selected="1" data-toggle="dropdown" aria-expanded="true">
+               Elige opción 1 punto
+               <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu listCandidates141" role="menu" aria-labelledby="dropdownMenuPrograma1">
+               </ul>
+            </div>
+         </div>
+      </div>
+      
+	  
+	  <br>
+	  <a class="btn btn-default center-block" href="#" onclick="sendResult();">Finalizar</a>
+      <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+      <!-- Include all compiled plugins (below), or include individual files as needed -->
+      <script src="bootstrap/js/bootstrap.min.js"></script>
+   </body>
+</html>
+	

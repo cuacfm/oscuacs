@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+		 <head>
+		 <meta charset="utf-8">
+		 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		 <meta name="viewport" content="width=device-width, initial-scale=1">
+         
+         <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+         <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+         <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+         <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+         <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+         <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+         <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+         <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+         <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+         <link rel="icon" type="image/png" sizes="192x192"  href="favicon/android-icon-192x192.png">
+         <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+         <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+         <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+         <link rel="manifest" href="favicon/manifest.json">
+         <meta name="msapplication-TileColor" content="#ffffff">
+         <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+         <meta name="theme-color" content="#ffffff">
+         
+         
+		 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		 <title>Oscuacs 2016</title>
+
+		 <!-- Bootstrap -->
+		 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+		 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		 <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+		 <script type="text/javascript" src="bootstrap/js/jquery-1.9.1.js"></script>
+		 <script>
+         $(window).load(function(){ 
+		 
+			$('body').find('.sendCode').on('click',function(){
+				
+				$('body').find('.cargandoNext').css("display", "block");
+				
+				
+				var userKey = $('body').find('.sendCodeInput').val();
+				
+				//reques to see if code is correct
+				var request = new XMLHttpRequest();
+
+				request.open('POST', "http://193.147.40.30:8080/api/voter/"+userKey+"/contest");
+				console.log("url::>>"+"http://193.147.40.30:8080/api/voter/"+userKey+"/contest");
+				request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+				
+				request.onreadystatechange = function () {
+				  if (this.readyState === 4){
+				  	if(this.status == 200) {
+						
+						//request to see if user had voted before
+						var requestInner = new XMLHttpRequest();
+		
+						//requestInner.open('GET', 'http://193.147.40.30:8080/api/contests/OSCUACS_2016');
+						//console.log("url::>>"+'http://193.147.40.30:8080/api/contests/OSCUACS_2016');
+						requestInner.open('GET', "http://193.147.40.30:8080/api/contests/OSCUACS_2016/shows/"+userKey);
+						console.log("url::>>"+"http://193.147.40.30:8080/api/contests/OSCUACS_2016/shows/"+userKey);
+						requestInner.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+						
+						requestInner.onreadystatechange = function () {
+						  if (this.readyState === 4){
+							
+							if(this.status == 200) {
+								try{
+									var json = JSON.parse(this.responseText);
+									console.log(json.voting);
+									if(!json.hasVoted){
+										//redeirect to result
+										window.location.replace("candidaturas.html?code="+userKey);
+									}
+									else{
+										//redirect to voting
+										window.location.replace("resultados.html?code="+userKey);
+									}
+								}
+								catch(err){
+									console.log(err);
+								}
+							  }
+							  else{
+								  alert("La clave no existe."); 
+								  $('body').find('.cargandoNext').css("display", "none");
+							  }
+							}
+						};
+						requestInner.send();	
+					  }
+					  else{
+						  alert('La clave no existe en el sistema');
+						  $('body').find('.cargandoNext').css("display", "none");
+					  }
+					}
+				};
+				
+				var body = "code="+userKey;
+				request.send(body);
+				
+				
+				});
+		 
+		 });
+		 
+		 </script>
+		 </head>
+		 <body>
+<nav class="navbar navbar-default">
+           <div class="container-fluid">
+    <div class="navbar-header"> <a class="navbar-brand" href="portada.html"> <img alt="Oscuacs 2016" src="images/Oscuacs2016.png" style="width:25px;"> </a>
+               <p class="navbar-text navbar-right">Votación OSCUACS 2016</p>
+             </div>
+  </div>
+         </nav>
+<div class="row">
+           <div style="margin:30px;">
+    <h1>Bienvenid@s</h1>
+    <img alt="Oscuacs 2016" src="images/Oscuacs2016large.png" style="width:100%;" />
+    <label for="basic-url">Introduce tu clave para empezar</label>
+    <div class="input-group"> <span class="input-group-addon" id="basic-addon3">Clave</span>
+               <input type="text" class="form-control sendCodeInput" id="basic-url" aria-describedby="basic-addon3">
+               <span class="input-group-btn">
+      <button class="btn btn-default sendCode" type="button">Enviar!</button>
+      </span> </div>
+    <div class="clearfix"><br/>
+    <div class="progress cargandoNext" style="display:none;">
+      <div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+        <span class="sr-only">Cargando información...</span>
+      </div>
+      <div class="clearfix"><br/>
+	</div>
+  
+             </div>
+    <div class="well well-lg">La gala de premios de CUAC FM para elegir a los mejores de la temporada. Es un día de chantajes y mucha diversión.</div>
+  </div>
+         </div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> 
+<!-- Include all compiled plugins (below), or include individual files as needed --> 
+<script src="bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
