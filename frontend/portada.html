@@ -23,9 +23,10 @@
          <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
          <meta name="theme-color" content="#ffffff">
          
+         <script type="text/javascript" src="config/config.js"></script>
          
 		 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-		 <title>Oscuacs 2016</title>
+		 <title>Gran gala de los OSCUACS</title>
 
 		 <!-- Bootstrap -->
 		 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -51,8 +52,8 @@
 				//reques to see if code is correct
 				var request = new XMLHttpRequest();
 
-				request.open('POST', "http://193.147.40.30:8080/api/voter/"+userKey+"/contest");
-				console.log("url::>>"+"http://193.147.40.30:8080/api/voter/"+userKey+"/contest");
+				request.open('POST', getApi() + "voter/"+userKey+"/contest");
+				console.log("url::>>"+ getApi() + "voter/"+userKey+"/contest");
 				request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 				
 				request.onreadystatechange = function () {
@@ -61,11 +62,9 @@
 						
 						//request to see if user had voted before
 						var requestInner = new XMLHttpRequest();
-		
-						//requestInner.open('GET', 'http://193.147.40.30:8080/api/contests/OSCUACS_2016');
-						//console.log("url::>>"+'http://193.147.40.30:8080/api/contests/OSCUACS_2016');
-						requestInner.open('GET', "http://193.147.40.30:8080/api/contests/OSCUACS_2016/shows/"+userKey);
-						console.log("url::>>"+"http://193.147.40.30:8080/api/contests/OSCUACS_2016/shows/"+userKey);
+
+						requestInner.open('GET', getApi() +"contests/"+getContest()+"/shows/"+userKey);
+						console.log("url::>>"+getApi() +"contests/"+getContest()+"/shows/"+userKey);
 						requestInner.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 						
 						requestInner.onreadystatechange = function () {
@@ -113,11 +112,11 @@
 		 
 		 </script>
 		 </head>
-		 <body>
+		 <body onload="yearHTML();">
 <nav class="navbar navbar-default">
            <div class="container-fluid">
     <div class="navbar-header"> <a class="navbar-brand" href="portada.html"> <img alt="Oscuacs 2016" src="images/Oscuacs2016.png" style="width:25px;"> </a>
-               <p class="navbar-text navbar-right">Votación OSCUACS 2016</p>
+               <p class="navbar-text navbar-right">Votación OSCUACS <span id="year_tag"></span></p>
              </div>
   </div>
          </nav>

@@ -25,7 +25,9 @@
          <meta name="theme-color" content="#ffffff">
     
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Oscuacs 2016</title>
+    <title>Oscuacs</title>
+
+    <script type="text/javascript" src="config/config.js"></script>
 
 
 	<script>
@@ -54,14 +56,14 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body onload="yearHTML();"> 
   <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="portada.html">
         <img alt="Oscuacs 2016" src="images/Oscuacs2016.png" style="width:25px;">
       </a>
-	  <p class="navbar-text navbar-right">Votación OSCUACS 2016</p>
+	  <p class="navbar-text navbar-right">Votación OSCUACS <span id="year_tag"></span></p>
     </div>
 	
   </div>
